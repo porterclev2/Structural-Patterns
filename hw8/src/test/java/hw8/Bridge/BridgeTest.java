@@ -15,6 +15,7 @@ public class BridgeTest {
     Customer connor = new Customer("Connor", "connor@gmail.com", "714-555-0002");
     NotificationChannel email = new EmailChannel();
     NotificationChannel sms = new SmsChannel();
+    NotificationChannel push = new PushChannel();
     ByteArrayOutputStream output = new ByteArrayOutputStream();
     PrintStream originalOut = System.out;
 
@@ -53,6 +54,31 @@ public class BridgeTest {
         new BitcoinPayment(sms).notifyCustomer(connor, 75.25);
         assertTrue(output.toString().contains("To: 714-555-0002"));
         assertTrue(output.toString().contains("Connor, we got your Bitcoin payment of $75.25."));
+    }
+    @Test
+    public void testOnlineWithPush() {
+        new OnlinePaymentNotification(push, "PayPal").notifyCustomer(kyle, 42.00);
+        assertTrue(output.toString().contains("Push to: Kyle's phone app"));
+        assertTrue(output.toString().contains("Kyle, we got your payment of $42.00 by PayPal."));
+    }
+    @Test
+    public void testCashWithPush() {
+        new CashOnDeliveryPayment(push).notifyCustomer(connor, 20.00);
+        assertTrue(output.toString().contains("Push to: Connor's phone app"));
+        assertTrue(output.toString().contains("Connor, your order is on the way. Please pay $20.00 in cash"));
+    }
+    @Test
+    public void testBitcoinWithPush() {
+        new BitcoinPayment(push).notifyCustomer(kyle, 9.99);
+        assertTrue(output.toString().contains("Push to: Kyle's phone app"));
+        assertTrue(output.toString().contains("Kyle, we got your Bitcoin payment of $9.99."));
+    }
+    @Test
+    public void testPushChannelFormat() {
+        push.send(connor, "hello.");
+        String expected = String.join(System.lineSeparator(),
+                "Push to: Connor's phone app", "Payment Update", "Connor, hello.", "");
+        assertEquals(expected, output.toString());
     }
     @Test
     public void testOnlineMessage() {
