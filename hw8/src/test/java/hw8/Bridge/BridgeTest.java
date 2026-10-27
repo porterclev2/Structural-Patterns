@@ -43,6 +43,18 @@ public class BridgeTest {
         assertTrue(output.toString().contains("Kyle, your order is on the way. Please pay $15.00 in cash"));
     }
     @Test
+    public void testBitcoinWithEmail() {
+        new BitcoinPayment(email).notifyCustomer(kyle, 250.00);
+        assertTrue(output.toString().contains("To: kyle@gmail.com"));
+        assertTrue(output.toString().contains("Dear Kyle, we got your Bitcoin payment of $250.00."));
+    }
+    @Test
+    public void testBitcoinWithSms() {
+        new BitcoinPayment(sms).notifyCustomer(connor, 75.25);
+        assertTrue(output.toString().contains("To: 714-555-0002"));
+        assertTrue(output.toString().contains("Connor, we got your Bitcoin payment of $75.25."));
+    }
+    @Test
     public void testOnlineMessage() {
         String expected = "we got your payment of $10.00 by PayPal. We are getting your order ready.";
         assertEquals(expected, new OnlinePaymentNotification(email, "PayPal").buildMessage(10));
@@ -51,6 +63,11 @@ public class BridgeTest {
     public void testCashMessage() {
         String expected = "your order is on the way. Please pay $5.50 in cash when it arrives.";
         assertEquals(expected, new CashOnDeliveryPayment(sms).buildMessage(5.5));
+    }
+    @Test
+    public void testBitcoinMessage() {
+        String expected = "we got your Bitcoin payment of $1.50. We will ship your order once the payment is confirmed.";
+        assertEquals(expected, new BitcoinPayment(email).buildMessage(1.5));
     }
     @Test
     public void testFormatAmount() {
