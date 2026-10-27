@@ -18,5 +18,11 @@ public class BridgeDriver {
 
         System.out.println("\n4: Cash on Delivery + SMS");
         new CashOnDeliveryPayment(sms).notifyCustomer(kyle, 15.00);
+
+        System.out.println("\n5: Bitcoin + Email");
+        new BitcoinPayment(email).notifyCustomer(kyle, 250.00);
+
+        System.out.println("\n6: Bitcoin + SMS");
+        new BitcoinPayment(sms).notifyCustomer(connor, 75.25);
     }
 }
